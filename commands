@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Create a bridge network named MyNetwork
+docker network create MyNetwork
+
+# Build the Nginx image from the Dockerfile in the current directory
+docker image build -t my-nginx-image /root/.ssh/Docker/
+
+# Run a container from the Nginx image in MyNetwork listening on port 8080
+docker container run --name my-nginx-container --network MyNetwork -d -p 8080:80 my-nginx-image
+
+# Run an Ubuntu container from the Ubuntu image in MyNetwork
+docker container run --name my-ubuntu-container --network MyNetwork -itd ubuntu
+
+# Install curl in the Ubuntu container (since the default Ubuntu image doesn't include it)
+docker container exec my-ubuntu-container apt-get update
+docker container exec my-ubuntu-container apt-get install -y curl
+
+# Use curl to reach the Nginx container by hostname
+docker container exec my-ubuntu-container curl my-nginx-container
+
+#!/bin/bash
+
